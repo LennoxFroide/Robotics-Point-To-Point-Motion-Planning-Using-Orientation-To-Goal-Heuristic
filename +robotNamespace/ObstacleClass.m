@@ -1,0 +1,85 @@
+classdef ObstacleClass
+    properties
+        clientId;
+        scenarioName;
+        cuboidList;
+        sphereList;
+        cylinderList;
+    end
+    methods
+        %----------Helper function to set up the clientId and scenarioName
+        % properties of the obstacle class-------------------%
+        function object = ObstacleClass(userName,environmentName)
+            if nargin == 2
+                object.clientId = userName;
+                object.scenarioName = environmentName;
+            end
+
+        end
+
+        %-----------Helper function to set the obstacle positions----%
+        function statusCode = setObstacleAtUserPositions(object,stringName)
+            % Getting cuboid handle
+            [returnCode,obstacleHandle] = object.scenarioName.simxGetObjectHandle(object.clientId,stringName,object.scenarioName.simx_opmode_blocking);
+            % Sanity check
+            if isequal((returnCode),nan)
+               disp("Error in getting object handles!");
+                return
+            end
+            % Setting each shape's position
+            % Setting each shape's position
+            if stringName == "Cuboid"
+                [statusCode1] = object.scenarioName.simxSetObjectPosition(object.clientId,obstacleHandle,-1,[object.cuboidList +0.075],object.scenarioName.simx_opmode_blocking);
+            elseif stringName == "Cylinder"
+                [statusCode2] = object.scenarioName.simxSetObjectPosition(object.clientId,obstacleHandle,-1,[object.cylinderList +0.1500],object.scenarioName.simx_opmode_blocking);
+            elseif stringName == "Sphere"
+                [statusCode3] = object.scenarioName.simxSetObjectPosition(object.clientId,obstacleHandle,-1,[object.sphereList +0.1500],object.scenarioName.simx_opmode_blocking); 
+            else
+                disp("Invalid obstacle name provided!")
+            end
+            % Sanity check
+            %{
+            if isequal((statusCode1||statusCode2||statusCode3),nan)
+                disp("Error in setting the object position!");
+                return
+            end
+            %}
+            statusCode = 1;
+        end
+        %------------Helper function to get the obstacle coordinates---------%
+        function coords =  getObstacleCoordinates(object,stringName)
+            if stringName == "Cuboid"
+                coords = object.getCuboidCoordinates();
+            elseif stringName == "Sphere"
+                coords = object.getSphereCoordinates();
+            elseif stringName == "Cylinder"
+                coords = object.getCylinderCoordinates();
+            else
+            end
+            pause(0.5);
+        end
+        %------------Helper function to get the obstacle coordinates---------%
+        function handle =  getObstacleHandle(object,stringName)
+            [returnCode,handle] = object.scenarioName.simxGetObjectHandle(object.clientId,stringName,object.scenarioName.simx_opmode_blocking);
+            pause(0.5);
+        end
+        %-------------Helper function to get the cuboid coordinates---------%
+        function cuboidCoords = getCuboidCoordinates(object)
+            cuboidX = input("What is the cuboid's x-coordinate?In range: [-2.4...0...2.4]");
+            cuboidY = input("What is the cuboid's y-coordinate?In range: [-2.4...0...2.4]");
+            cuboidCoords = [cuboidX,cuboidY];
+        end
+        %-------------Helper function to get the sphere coordinates---------%
+        function sphereCoords = getSphereCoordinates(object)
+            sphereX = input("What is the sphere's x-coordinate?In range: [-2.4...0...2.4]");
+            sphereY = input("What is the sphere's y-coordinate?In range: [-2.4...0...2.4]");
+            sphereCoords = [sphereX,sphereY];
+        end
+        %-------------Helper function to get the cylinder coordinates---------%
+        function cylinderCoords = getCylinderCoordinates(object)
+            cylinderX = input("What is the cylinder's x-coordinate?In range: [-2.4...0...2.4]");
+            cylinderY = input("What is the cylinder's y-coordinate?In range: [-2.4...0...2.4]");
+            cylinderCoords = [cylinderX,cylinderY];
+        end
+    end
+end
